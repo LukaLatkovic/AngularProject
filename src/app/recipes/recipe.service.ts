@@ -2,12 +2,15 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipeService {
 recipeSelected= new EventEmitter<Recipe>();
+
+  recipeChanged=new Subject<Recipe[]>();
 
   recipes: Recipe[] = [
     new Recipe('Test recept', 'Ovo je test', 'https://img.koket.se/media/raraka-grundrecept-ny.jpg',[
@@ -33,5 +36,20 @@ recipeSelected= new EventEmitter<Recipe>();
 
   getRecipe(index: number){
     return this.recipes[index];
+  }
+
+  addRecipe(rp:Recipe){
+    this.recipes.push(rp);
+    this.recipeChanged.next(this.recipes.slice());
+  }
+
+  updateRecipe(id: number, recipe:Recipe){
+    this.recipes[id]=recipe;
+    this.recipeChanged.next(this.recipes.slice());
+  }
+
+  deleteRecipe(id: number){
+    this.recipes.splice(id,1);
+    this.recipeChanged.next(this.recipes.slice());
   }
 }
